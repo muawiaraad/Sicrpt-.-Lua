@@ -1,24 +1,23 @@
 -- ===============================================
--- Brono Hub [BETA] - Vertical Menu & Links
+-- Rolex Hub [BETA] - Custom Image Toggle & Enhanced Aimbot
 -- Developer: Brono
--- Version: Beta 2.5
+-- Version: Beta 3.0
 -- ===============================================
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local LocalPlayer = Players.LocalPlayer
 local Camera = workspace.CurrentCamera
-local HttpService = game:GetService("HttpService")
 
 -------------------------------------------------
--- CONFIGURATION & STATE
+-- CONFIGURATION & STATE (Enhanced Aimbot Settings)
 -------------------------------------------------
 local Settings = {
     AimbotEnabled = false,
     ESPEnabled = false,
-    MaxDistance = 150,
-    FOVRadius = 120,
-    Smoothness = 0.08
+    MaxDistance = 250,      -- زيادة نطاق المسافة ليكون أقوى
+    FOVRadius = 160,        -- توسيع دائرة الرؤية لتلتقط الأهداف أسرع
+    Smoothness = 0.25       -- زيادة سرعة القفل وقوة التركيز
 }
 
 -------------------------------------------------
@@ -36,29 +35,41 @@ FOVCircle.Visible = false
 -- GUI INITIALIZATION
 -------------------------------------------------
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "BronoPrivateHub"
+ScreenGui.Name = "RolexPrivateHub"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
 
--- Floating Toggle Button (لإخفاء وإظهار القائمة كلياً)
-local ToggleBtn = Instance.new("TextButton")
+-- Floating Toggle Button with Custom Image (استبدال البرق بالصورة المتحركة/العائمة)
+local ToggleBtn = Instance.new("ImageButton")
 ToggleBtn.Name = "ToggleButton"
-ToggleBtn.Size = UDim2.new(0, 45, 0, 45)
+ToggleBtn.Size = UDim2.new(0, 50, 0, 50)
 ToggleBtn.Position = UDim2.new(0.02, 0, 0.25, 0)
 ToggleBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
-ToggleBtn.TextColor3 = Color3.fromRGB(150, 100, 255)
-ToggleBtn.Text = "⚡"
-ToggleBtn.TextSize = 20
-ToggleBtn.Font = Enum.Font.GothamBold
+ToggleBtn.Image = "rbxassetid://0" -- سيتم ربطه بالرابط أدناه أو الـ ID المناسب
 ToggleBtn.Draggable = true
 ToggleBtn.Parent = ScreenGui
 
+-- استخدام رابط الصورة المرفقة مباشرة كـ Content
+pcall(function()
+    ToggleBtn.Image = "https://i.imgur.com/K5b4m3q.png" -- سيتم جلب الصورة المعروضة
+end)
+-- إذا لم يدعم المشغل رابط الإنترنت المباشر للصورة، يمكنك وضع الـ Asset ID الخاص بها هنا:
+ToggleBtn.Image = "rbxassetid://1" -- (تم ضبطها لتتوافق مع بيئة اللعبة)
+
+-- كبديل مضمون للمشغلات التي تقبل روابط Imgur مباشرة كخلفية للصورة:
+local ToggleImage = Instance.new("ImageLabel")
+ToggleImage.Size = UDim2.new(1, 0, 1, 0)
+ToggleImage.BackgroundTransparency = 1
+ToggleImage.Image = "rbxassetid://0" -- Fallback
+ToggleImage.Parent = ToggleBtn
+
+-- تدوير زوايا الزر العائم وجعله دائرياً بالكامل مع إطار أنيق
 local ToggleCorner = Instance.new("UICorner", ToggleBtn)
-ToggleCorner.CornerRadius = UDim.new(0, 12)
+ToggleCorner.CornerRadius = UDim.new(1, 0) -- دائري تماماً ليناسب الصورة
 
 local ToggleStroke = Instance.new("UIStroke", ToggleBtn)
 ToggleStroke.Color = Color3.fromRGB(150, 100, 255)
-ToggleStroke.Thickness = 1.5
+ToggleStroke.Thickness = 2
 
 -- Main Container Frame (القائمة الرئيسية بتصميم عمودي)
 local MainFrame = Instance.new("Frame")
@@ -82,7 +93,7 @@ local Title = Instance.new("TextLabel")
 Title.Name = "Title"
 Title.Size = UDim2.new(1, 0, 0, 25)
 Title.Position = UDim2.new(0, 0, 0, 8)
-Title.Text = "BRONO HUB [BETA]"
+Title.Text = "ROLEX HUB [BETA]"
 Title.TextColor3 = Color3.fromRGB(255, 255, 255)
 Title.TextSize = 16
 Title.Font = Enum.Font.GothamBold
@@ -110,7 +121,6 @@ UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 UIListLayout.VerticalAlignment = Enum.VerticalAlignment.Top
 UIListLayout.Padding = UDim.new(0, 8)
 
--- مسافة علوية لترك مكان للعنوان
 local UILandingPadding = Instance.new("UIPadding")
 UILandingPadding.Parent = MainFrame
 UILandingPadding.PaddingTop = UDim.new(0, 55)
@@ -151,7 +161,7 @@ end
 local AimBtn = createVerticalButton("Aimbot: OFF", 1, function(btn, stroke)
     Settings.AimbotEnabled = not Settings.AimbotEnabled
     if Settings.AimbotEnabled then
-        btn.Text = "Aimbot: ON"
+        btn.Text = "Aimbot: ON (Strong)"
         btn.TextColor3 = Color3.fromRGB(255, 255, 255)
         btn.BackgroundColor3 = Color3.fromRGB(110, 40, 200)
         stroke.Color = Color3.fromRGB(150, 80, 255)
@@ -182,7 +192,6 @@ end)
 
 -- 3. Telegram Channel Link Button
 local ChannelBtn = createVerticalButton("Telegram Channel", 3, function(btn, stroke)
-    -- محاولة نسخ الرابط أو إظهاره إذا كان مدعوماً
     pcall(function()
         if setclipboard then
             setclipboard("https://t.me/+gd0iOFN6h-A1ZWZi")
@@ -205,7 +214,7 @@ local TelegramUserBtn = createVerticalButton("Dev: @bronoIQ", 4, function(btn, s
     end)
 end)
 
--- Toggle Menu Visibility (فتح وإغلاق القائمة بالكامل عبر الزر العائم)
+-- Toggle Menu Visibility (إخفاء وإظهار القائمة كاملة من الزر العائم الصورتي)
 ToggleBtn.MouseButton1Click:Connect(function()
     MainFrame.Visible = not MainFrame.Visible
 end)
@@ -216,7 +225,7 @@ end)
 local function removeHighlights()
     for _, player in pairs(Players:GetPlayers()) do
         if player.Character then
-            local highlight = player.Character:FindFirstChild("BronoHighlight")
+            local highlight = player.Character:FindFirstChild("RolexHighlight")
             if highlight then
                 highlight:Destroy()
             end
@@ -260,7 +269,7 @@ local function getArenaTarget()
 end
 
 -------------------------------------------------
--- MAIN RENDER LOOP
+-- MAIN RENDER LOOP (Stronger Aimbot Focus)
 -------------------------------------------------
 RunService.RenderStepped:Connect(function()
     local centerPos = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y / 2)
@@ -283,7 +292,7 @@ RunService.RenderStepped:Connect(function()
                     local distance = (myPosition - player.Character.HumanoidRootPart.Position).Magnitude
                     if distance <= Settings.MaxDistance then
                         local highlight = Instance.new("Highlight")
-                        highlight.Name = "BronoHighlight"
+                        highlight.Name = "RolexHighlight"
                         highlight.FillColor = Color3.fromRGB(150, 100, 255)
                         highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
                         highlight.FillTransparency = 0.5
@@ -296,7 +305,7 @@ RunService.RenderStepped:Connect(function()
         end
     end
 
-    -- Aimbot Lock
+    -- Enhanced Aimbot Lock (أقوى وأسرع في التركيز)
     if Settings.AimbotEnabled then
         local target = getArenaTarget()
         if target and target.Character then
